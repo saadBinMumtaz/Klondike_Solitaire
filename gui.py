@@ -15,6 +15,7 @@ class SolitaireApp:
         self.canvas = tk.Canvas(root, width=100, height=100, bg="darkgreen")
         self.canvas.pack(fill="both", expand=True)
         self.canvas.bind("<Configure>", self.onResize)
+        self.canvas.bind("<Button-1>", self.onClick)
 
         self.updateSize(1000, 700)
         self.hits = []          # clickable areas, filled by redraw
@@ -45,6 +46,17 @@ class SolitaireApp:
 
     def addHit(self, x, y, name, index):
         self.hits.append((x, y, x + self.cardW, y + self.cardH, name, index))
+
+    def findHit(self, x, y):
+        # check from the last drawn (top most) to the first
+        for i in range(len(self.hits) - 1, -1, -1):
+            x1, y1, x2, y2, name, index = self.hits[i]
+            if x1 <= x <= x2 and y1 <= y <= y2:
+                return (name, index)
+        return None
+
+    def onClick(self, event):
+        print(self.findHit(event.x, event.y))
 
     def isSelected(self, name, index):
         if self.selected is None:
