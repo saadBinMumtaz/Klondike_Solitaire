@@ -56,7 +56,10 @@ class SolitaireApp:
         return None
 
     def onClick(self, event):
-        print(self.findHit(event.x, event.y))
+        hit = self.findHit(event.x, event.y)
+        if hit is not None and hit[0] == "stock":
+            self.game.draw()
+            self.redraw()
 
     def isSelected(self, name, index):
         if self.selected is None:
