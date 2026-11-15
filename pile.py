@@ -1,5 +1,6 @@
 from structures.stack import Stack
 from structures.linkedlist import LinkedList
+from structures.queue import Queue
 
 class StackPile:
     # used for foundation and waste
@@ -71,3 +72,24 @@ class TableauPile:
 
     def toList(self):
         return self.cards.toList()
+
+class Stock:
+    def __init__(self):
+        self.queue = Queue()
+
+    def addCards(self, cards):
+        for card in cards:
+            card.faceUp = False
+            self.queue.enqueue(card)
+
+    def draw(self, n):
+        # takes up to n cards face up
+        cards = []
+        while len(cards) < n and not self.queue.isEmpty():
+            card = self.queue.dequeue()
+            card.faceUp = True
+            cards.append(card)
+        return cards
+
+    def size(self):
+        return self.queue.size()        
