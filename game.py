@@ -58,3 +58,18 @@ class Game:
         cards = stock.draw(self.drawCount)
         self.put("waste", cards)
         return True
+
+    def canMove(self, sourceName, destName, count):
+        if sourceName == destName:
+            return False
+        source = self.piles[sourceName]
+        dest = self.piles[destName]
+        if count < 1 or count > source.size():
+            return False
+
+        # only tableau piles
+        if count > 1 and (sourceName[0] != "T" or destName[0] == "F"):
+            return False
+
+        firstCard = source.cardFromTop(count)
+        return firstCard.faceUp and dest.canAccept(firstCard)    
