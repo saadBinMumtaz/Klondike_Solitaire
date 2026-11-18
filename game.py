@@ -73,3 +73,13 @@ class Game:
 
         firstCard = source.cardFromTop(count)
         return firstCard.faceUp and dest.canAccept(firstCard)    
+
+    def move(self, sourceName, destName, count):
+        if not self.canMove(sourceName, destName, count):
+            return False
+        cards = self.piles[sourceName].removeLast(count)
+        self.put(destName, cards)
+        flipped = False
+        if sourceName[0] == "T":
+            flipped = self.piles[sourceName].flipTop()   # flip the new top card
+        return True

@@ -80,6 +80,8 @@ class SolitaireApp:
         elif hit[0] == "stock":
             self.selected = None
             self.game.draw()
+        elif self.selected is not None and self.game.move(self.selected[0], hit[0], self.selected[1]):
+            self.selected = None
         else:
             self.select(hit[0], hit[1])
         self.redraw()
