@@ -73,11 +73,16 @@ class SolitaireApp:
                 return (name, index)
         return None
 
-    def onClick(self, event):
+        def onClick(self, event):
         hit = self.findHit(event.x, event.y)
-        if hit is not None and hit[0] == "stock":
+        if hit is None:
+            self.selected = None
+        elif hit[0] == "stock":
+            self.selected = None
             self.game.draw()
-            self.redraw()
+        else:
+            self.select(hit[0], hit[1])
+        self.redraw()
 
     def isSelected(self, name, index):
         if self.selected is None:
@@ -86,6 +91,18 @@ class SolitaireApp:
         if name != selectedName:
             return False
         return index >= self.game.piles[name].size() - selectedCount
+
+    def select(self, name, index):
+        pile = self.game.piles[name]
+        if index == -1:
+            self.selected = None
+            return
+        count = pile.size() - index
+        card = pile.cardFromTop(count)
+        if not card.faceUp or self.selected == (name, count):
+            self.selected = None       # face down card, or clicked the same card again
+        else:
+            self.selected = (name, count)
 
     def roundedRect(self, x1, y1, x2, y2, r, **options):
         # a rectangle with rounded corners, drawn as a smooth polygon
