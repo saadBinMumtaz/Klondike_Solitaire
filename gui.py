@@ -41,9 +41,10 @@ class SolitaireApp:
         self.addModeButton("Turn 1", 1)
         self.addModeButton("Turn 3", 3)
         self.status = tk.Label(self.buttons, text="", bg="#14421f", fg="#ffd400", font=("Arial", 11, "bold"))
+        self.status.pack(side="left", padx=14)
         self.timeLabel = tk.Label(self.buttons, text="Time: 0:00", bg="#14421f", fg="white", font=("Arial", 12, "bold"))
         self.scoreLabel = tk.Label(self.buttons, text="Score: 0", bg="#14421f", fg="white", font=("Arial", 12, "bold"))
-        self.scoreLabel.pack(side="right", padx=12)        
+        self.scoreLabel.pack(side="right", padx=12)
         self.timeLabel.pack(side="right", padx=12)
 
         self.canvas = tk.Canvas(root, width=100, height=100, bg=FELT, highlightthickness=0)
@@ -85,7 +86,7 @@ class SolitaireApp:
     def tick(self):
         seconds = int(time.time() - self.startTime)
         self.timeLabel.config(text="Time: " + str(seconds // 60) + ":" + str(seconds % 60).zfill(2))
-        self.root.after(1000, self.tick)        
+        self.root.after(1000, self.tick)
 
     def addHit(self, x, y, name, index):
         self.hits.append((x, y, x + self.cardW, y + self.cardH, name, index))
@@ -278,6 +279,7 @@ class SolitaireApp:
             self.newGame()
 
     def onUndo(self):
+        self.status.config(text="")
         self.game.undo()
         self.selected = None
         self.redraw()
@@ -307,5 +309,5 @@ class SolitaireApp:
 
     def checkWin(self):
         if self.game.isWon():
-            messagebox.showinfo("Solitaire", "You won!")        
+            messagebox.showinfo("Solitaire", "You won!")
             self.newGame()
