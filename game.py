@@ -123,3 +123,9 @@ class Game:
             self.draw()
         self.redoStack = savedRedo
         return True
+
+    def isWon(self):
+        for suit in SUITS:
+            if self.piles["F" + suit].size() != 13:
+                return False
+        return True        

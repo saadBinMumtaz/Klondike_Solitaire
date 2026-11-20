@@ -1,4 +1,5 @@
 import tkinter as tk
+from tkinter import messagebox
 from card import SUITS
 from game import Game, tableauNames, foundationNames
 
@@ -92,6 +93,7 @@ class SolitaireApp:
         else:
             self.select(hit[0], hit[1])
         self.redraw()
+        self.checkWin()
 
     def isSelected(self, name, index):
         if self.selected is None:
@@ -248,8 +250,14 @@ class SolitaireApp:
         self.game.undo()
         self.selected = None
         self.redraw()
+        self.checkWin()
 
     def onRedo(self):
         self.game.redo()
         self.selected = None
         self.redraw()
+        self.checkWin()
+        
+    def checkWin(self):
+        if self.game.isWon():
+            messagebox.showinfo("Solitaire", "You won!")        
