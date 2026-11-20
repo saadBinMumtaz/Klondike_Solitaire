@@ -110,4 +110,16 @@ class Game:
                 self.piles[move.source].topCard().faceUp = False   # turn it back face down
             self.put(move.source, cards)
         self.redoStack.push(move)
-        return True        
+        return True
+
+    def redo(self):
+        move = self.redoStack.pop()
+        if move is None:
+            return False
+        savedRedo = self.redoStack     # move() and draw() clear the redo stack, so keep it
+        if move.kind == "move":
+            self.move(move.source, move.dest, move.count)
+        else:
+            self.draw()
+        self.redoStack = savedRedo
+        return True

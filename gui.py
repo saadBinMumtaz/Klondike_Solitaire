@@ -33,6 +33,9 @@ class SolitaireApp:
         self.buttons.pack(side="top", fill="x")
         self.addButton("Undo", self.onUndo, "#f2b705")
 
+        self.addButton("Undo", self.onUndo, "#f2b705")
+        self.addButton("Redo", self.onRedo, "#f2b705")
+
         self.canvas = tk.Canvas(root, width=100, height=100, bg=FELT, highlightthickness=0)
         self.canvas.pack(fill="both", expand=True)
         self.canvas.bind("<Configure>", self.onResize)
@@ -243,5 +246,10 @@ class SolitaireApp:
 
     def onUndo(self):
         self.game.undo()
+        self.selected = None
+        self.redraw()
+
+    def onRedo(self):
+        self.game.redo()
         self.selected = None
         self.redraw()
