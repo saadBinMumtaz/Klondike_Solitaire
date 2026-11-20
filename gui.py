@@ -29,6 +29,10 @@ class SolitaireApp:
         root.geometry("1000x700")
         root.state("zoomed")      # start maximized (Windows and Mac only, delete on Linux)
 
+        self.buttons = tk.Frame(root, bg="#14421f")
+        self.buttons.pack(side="top", fill="x")
+        self.addButton("Undo", self.onUndo, "#f2b705")
+
         self.canvas = tk.Canvas(root, width=100, height=100, bg=FELT, highlightthickness=0)
         self.canvas.pack(fill="both", expand=True)
         self.canvas.bind("<Configure>", self.onResize)
@@ -232,3 +236,12 @@ class SolitaireApp:
                 if py > 0.5:
                     angle = 180        # symbols in the bottom half are upside down, like a real card
                 self.canvas.create_text(x + w * px, y + h * py, text=symbol, fill=color, font=pipFont, angle=angle)
+
+    def addButton(self, text, command, color):
+        button = tk.Button(self.buttons, text=text, command=command, bg=color, fg="black", relief="flat", font=("Arial", 11, "bold"), padx=14, pady=2)
+        button.pack(side="left", padx=4, pady=4)
+
+    def onUndo(self):
+        self.game.undo()
+        self.selected = None
+        self.redraw()

@@ -89,3 +89,25 @@ class Game:
             flipped = self.piles[sourceName].flipTop()   # flip the new top card
         self.record(Move("move", sourceName, destName, count, flipped))
         return True
+
+    def undo(self):
+        move = self.undoStack.pop()
+        if move is None:
+            return False
+        if move.kind == "draw":
+            cards = self.piles["waste"].removeLast(move.count)
+            self.piles["stock"].putBackOnFront(cards)
+            for card in cards:
+                self.cardLocation[card.id] = "stock"
+        elif move.kind == "recycle":
+            cards = self.piles["stock"].takeAll()
+            for card in cards:
+                card.faceUp = True
+            self.put("waste", cards)
+        else:
+            cards = self.piles[move.dest].removeLast(move.count)
+            if move.flipped:
+                self.piles[move.source].topCard().faceUp = False   # turn it back face down
+            self.put(move.source, cards)
+        self.redoStack.push(move)
+        return True        

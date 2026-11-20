@@ -92,4 +92,16 @@ class Stock:
         return cards
 
     def size(self):
-        return self.queue.size()        
+        return self.queue.size()      
+          
+    def takeAll(self):
+        cards = []
+        while self.queue.size() > 0:
+            cards.append(self.queue.dequeue())
+        return cards
+
+    def putBackOnFront(self, cards):
+        # puts cards at the front of the stock, so they are drawn first again
+        rest = self.takeAll()
+        self.addCards(cards)
+        self.addCards(rest)
