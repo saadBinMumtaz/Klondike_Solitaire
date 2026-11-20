@@ -40,6 +40,8 @@ class SolitaireApp:
         self.addModeButton("Turn 1", 1)
         self.addModeButton("Turn 3", 3)
         self.timeLabel = tk.Label(self.buttons, text="Time: 0:00", bg="#14421f", fg="white", font=("Arial", 12, "bold"))
+        self.scoreLabel = tk.Label(self.buttons, text="Score: 0", bg="#14421f", fg="white", font=("Arial", 12, "bold"))
+        self.scoreLabel.pack(side="right", padx=12)        
         self.timeLabel.pack(side="right", padx=12)
 
         self.canvas = tk.Canvas(root, width=100, height=100, bg=FELT, highlightthickness=0)
@@ -197,6 +199,7 @@ class SolitaireApp:
                     y = y + self.upGap * shrink
                 else:
                     y = y + self.downGap * shrink
+        self.scoreLabel.config(text="Score: " + str(game.score))
 
     def drawBack(self, x, y):
         w = self.cardW

@@ -15,6 +15,7 @@ class Game:
         self.cardLocation = {}        
         self.undoStack = Stack()
         self.redoStack = Stack()
+        self.score = 0
         self.setupGame()
 
     def setupGame(self):
@@ -56,7 +57,7 @@ class Game:
         if stock.size() == 0:
             if waste.size() == 0:
                 return False
-            # stock is empty, so flip the waste in the stock
+            # stock is empty, so flip the waste back into the stock
             cards = waste.removeLast(waste.size())
             self.put("stock", cards)
             self.record(Move("recycle", "waste", "stock", len(cards), False))
@@ -79,6 +80,15 @@ class Game:
         firstCard = source.cardFromTop(count)    # bottom card of the moving group
         return firstCard.faceUp and dest.canAccept(firstCard)
 
+    def points(self, sourceName, destName):
+        if sourceName[0] == "F":
+            return -15
+        if destName[0] == "F":
+            return 10
+        if sourceName == "waste":
+            return 5
+        return 0
+
     def move(self, sourceName, destName, count):
         if not self.canMove(sourceName, destName, count):
             return False
@@ -87,6 +97,7 @@ class Game:
         flipped = False
         if sourceName[0] == "T":
             flipped = self.piles[sourceName].flipTop()   # flip the new top card
+        self.score = self.score + self.points(sourceName, destName)
         self.record(Move("move", sourceName, destName, count, flipped))
         return True
 
@@ -108,6 +119,7 @@ class Game:
             cards = self.piles[move.dest].removeLast(move.count)
             if move.flipped:
                 self.piles[move.source].topCard().faceUp = False   # turn it back face down
+            self.score = self.score - self.points(move.source, move.dest)
             self.put(move.source, cards)
         self.redoStack.push(move)
         return True
@@ -128,4 +140,4 @@ class Game:
         for suit in SUITS:
             if self.piles["F" + suit].size() != 13:
                 return False
-        return True        
+        return True
