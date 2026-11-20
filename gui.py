@@ -36,9 +36,11 @@ class SolitaireApp:
         self.addButton("New Game", self.newGame, "#e8e8e8")
         self.addButton("Undo", self.onUndo, "#f2b705")
         self.addButton("Redo", self.onRedo, "#f2b705")
+        self.addButton("Hint", self.onHint, "#9c27b0", "white")
         self.drawMode = tk.IntVar(value=1)
         self.addModeButton("Turn 1", 1)
         self.addModeButton("Turn 3", 3)
+        self.status = tk.Label(self.buttons, text="", bg="#14421f", fg="#ffd400", font=("Arial", 11, "bold"))
         self.timeLabel = tk.Label(self.buttons, text="Time: 0:00", bg="#14421f", fg="white", font=("Arial", 12, "bold"))
         self.scoreLabel = tk.Label(self.buttons, text="Score: 0", bg="#14421f", fg="white", font=("Arial", 12, "bold"))
         self.scoreLabel.pack(side="right", padx=12)        
@@ -77,6 +79,7 @@ class SolitaireApp:
         self.game = Game(self.drawMode.get())
         self.selected = None
         self.startTime = time.time()
+        self.status.config(text="")
         self.redraw()
 
     def tick(self):
@@ -96,6 +99,7 @@ class SolitaireApp:
         return None
 
     def onClick(self, event):
+        self.status.config(text="")
         hit = self.findHit(event.x, event.y)
         if hit is None:
             self.selected = None
@@ -257,8 +261,8 @@ class SolitaireApp:
                     angle = 180        # symbols in the bottom half are upside down, like a real card
                 self.canvas.create_text(x + w * px, y + h * py, text=symbol, fill=color, font=pipFont, angle=angle)
 
-    def addButton(self, text, command, color):
-        button = tk.Button(self.buttons, text=text, command=command, bg=color, fg="black", relief="flat", font=("Arial", 11, "bold"), padx=14, pady=2)
+    def addButton(self, text, command, color, textColor="black"):
+        button = tk.Button(self.buttons, text=text, command=command, bg=color, fg=textColor, relief="flat", font=("Arial", 11, "bold"), padx=14, pady=2)
         button.pack(side="left", padx=4, pady=4)
 
     def addModeButton(self, text, value):
@@ -280,10 +284,26 @@ class SolitaireApp:
         self.checkWin()
 
     def onRedo(self):
+        self.status.config(text="")
         self.game.redo()
         self.selected = None
         self.redraw()
         self.checkWin()
+
+    def onHint(self):
+        hint = self.game.getHint()
+        if hint is None:
+            self.status.config(text="No moves left")
+        elif hint[0] == "stock":
+            self.status.config(text="Hint: draw from the stock")
+        else:
+            self.selected = (hint[0], hint[2])
+            if hint[1][0] == "F":
+                place = hint[1][1:] + " foundation"
+            else:
+                place = "pile " + hint[1][1:]
+            self.status.config(text="Hint: move the highlighted card to " + place)
+        self.redraw()
 
     def checkWin(self):
         if self.game.isWon():

@@ -141,3 +141,25 @@ class Game:
             if self.piles["F" + suit].size() != 13:
                 return False
         return True
+        
+    def getHint(self):
+        # returns (source, dest, count) for a useful legal move, or None
+        for source in ["waste"] + tableauNames:
+            pile = self.piles[source]
+            maxCount = pile.size()
+            if source == "waste":
+                maxCount = 1
+            for count in range(1, maxCount + 1):
+                for dest in foundationNames + tableauNames:
+                    if not self.canMove(source, dest, count):
+                        continue
+                    if source[0] == "T" and dest[0] == "T":
+                        wholePile = count == pile.size()
+                        if wholePile and pile.cardFromTop(count).rank == 13:
+                            continue    # a King already at the bottom of a pile gains nothing
+                        if not wholePile and pile.cardFromTop(count + 1).faceUp:
+                            continue    # the card underneath is already face up, so nothing is revealed
+                    return (source, dest, count)
+        if self.piles["stock"].size() > 0 or self.piles["waste"].size() > 0:
+            return ("stock", "waste", 1)
+        return None        
