@@ -32,8 +32,7 @@ class SolitaireApp:
 
         self.buttons = tk.Frame(root, bg="#14421f")
         self.buttons.pack(side="top", fill="x")
-        self.addButton("Undo", self.onUndo, "#f2b705")
-
+        self.addButton("New Game", self.newGame, "#e8e8e8")
         self.addButton("Undo", self.onUndo, "#f2b705")
         self.addButton("Redo", self.onRedo, "#f2b705")
 
@@ -257,7 +256,8 @@ class SolitaireApp:
         self.selected = None
         self.redraw()
         self.checkWin()
-        
+
     def checkWin(self):
         if self.game.isWon():
             messagebox.showinfo("Solitaire", "You won!")        
+            self.newGame()
