@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import messagebox
 from card import SUITS
 from game import Game, tableauNames, foundationNames
+import time
 
 SYMBOLS = {"hearts": "♥", "diamonds": "♦", "spades": "♠", "clubs": "♣"}
 FELT = "#1e5a2c"
@@ -35,10 +36,11 @@ class SolitaireApp:
         self.addButton("New Game", self.newGame, "#e8e8e8")
         self.addButton("Undo", self.onUndo, "#f2b705")
         self.addButton("Redo", self.onRedo, "#f2b705")
-
         self.drawMode = tk.IntVar(value=1)
         self.addModeButton("Turn 1", 1)
         self.addModeButton("Turn 3", 3)
+        self.timeLabel = tk.Label(self.buttons, text="Time: 0:00", bg="#14421f", fg="white", font=("Arial", 12, "bold"))
+        self.timeLabel.pack(side="right", padx=12)
 
         self.canvas = tk.Canvas(root, width=100, height=100, bg=FELT, highlightthickness=0)
         self.canvas.pack(fill="both", expand=True)
@@ -47,8 +49,9 @@ class SolitaireApp:
 
         self.updateSize(1000, 700)
         self.hits = []          # clickable areas, filled by redraw
-        self.selected = None    # used in a later commit
+        self.selected = None
         self.newGame()
+        self.tick()
 
     def updateSize(self, width, height):
         # works out every size from the window size
@@ -71,7 +74,13 @@ class SolitaireApp:
     def newGame(self):
         self.game = Game(self.drawMode.get())
         self.selected = None
+        self.startTime = time.time()
         self.redraw()
+
+    def tick(self):
+        seconds = int(time.time() - self.startTime)
+        self.timeLabel.config(text="Time: " + str(seconds // 60) + ":" + str(seconds % 60).zfill(2))
+        self.root.after(1000, self.tick)        
 
     def addHit(self, x, y, name, index):
         self.hits.append((x, y, x + self.cardW, y + self.cardH, name, index))
@@ -248,7 +257,7 @@ class SolitaireApp:
     def addButton(self, text, command, color):
         button = tk.Button(self.buttons, text=text, command=command, bg=color, fg="black", relief="flat", font=("Arial", 11, "bold"), padx=14, pady=2)
         button.pack(side="left", padx=4, pady=4)
-        
+
     def addModeButton(self, text, value):
         button = tk.Radiobutton(self.buttons, text=text, variable=self.drawMode, value=value, command=self.onDrawMode,
                                 indicatoron=False, bg="#2e8b3f", fg="white", selectcolor="#14421f",
