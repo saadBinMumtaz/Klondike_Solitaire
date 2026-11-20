@@ -36,6 +36,10 @@ class SolitaireApp:
         self.addButton("Undo", self.onUndo, "#f2b705")
         self.addButton("Redo", self.onRedo, "#f2b705")
 
+        self.drawMode = tk.IntVar(value=1)
+        self.addModeButton("Turn 1", 1)
+        self.addModeButton("Turn 3", 3)
+
         self.canvas = tk.Canvas(root, width=100, height=100, bg=FELT, highlightthickness=0)
         self.canvas.pack(fill="both", expand=True)
         self.canvas.bind("<Configure>", self.onResize)
@@ -65,7 +69,7 @@ class SolitaireApp:
         self.redraw()
 
     def newGame(self):
-        self.game = Game()
+        self.game = Game(self.drawMode.get())
         self.selected = None
         self.redraw()
 
@@ -244,6 +248,18 @@ class SolitaireApp:
     def addButton(self, text, command, color):
         button = tk.Button(self.buttons, text=text, command=command, bg=color, fg="black", relief="flat", font=("Arial", 11, "bold"), padx=14, pady=2)
         button.pack(side="left", padx=4, pady=4)
+        
+    def addModeButton(self, text, value):
+        button = tk.Radiobutton(self.buttons, text=text, variable=self.drawMode, value=value, command=self.onDrawMode,
+                                indicatoron=False, bg="#2e8b3f", fg="white", selectcolor="#14421f",
+                                activebackground="#3aa04e", activeforeground="white", relief="flat",
+                                font=("Arial", 11, "bold"), padx=14, pady=2)
+        button.pack(side="left", padx=2, pady=4)
+
+    def onDrawMode(self):
+        # only start a new game if the choice actually changed
+        if self.drawMode.get() != self.game.drawCount:
+            self.newGame()
 
     def onUndo(self):
         self.game.undo()
