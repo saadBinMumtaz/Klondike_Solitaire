@@ -73,7 +73,7 @@ class SolitaireApp:
                 return (name, index)
         return None
 
-        def onClick(self, event):
+    def onClick(self, event):
         hit = self.findHit(event.x, event.y)
         if hit is None:
             self.selected = None
