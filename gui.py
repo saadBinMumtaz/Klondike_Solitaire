@@ -51,6 +51,7 @@ class SolitaireApp:
         self.canvas.pack(fill="both", expand=True)
         self.canvas.bind("<Configure>", self.onResize)
         self.canvas.bind("<Button-1>", self.onClick)
+        self.canvas.bind("<Double-Button-1>", self.onDoubleClick)
 
         self.updateSize(1000, 700)
         self.hits = []          # clickable areas, filled by redraw
@@ -111,6 +112,28 @@ class SolitaireApp:
             self.selected = None
         else:
             self.select(hit[0], hit[1])
+        self.redraw()
+        self.checkWin()
+
+    def onDoubleClick(self, event):
+        self.status.config(text="")
+        hit = self.findHit(event.x, event.y)
+        if hit is not None and hit[0] == "stock":
+            self.onClick(event)      # so fast clicking on the stock still draws every time
+            return
+        if hit is not None and hit[1] != -1 and hit[0][0] != "F":
+            name = hit[0]
+            source = self.game.piles[name]
+            count = source.size() - hit[1]
+            card = source.cardFromTop(count)
+            # try the foundation first, then every tableau pile
+            for place in ["F" + card.suit] + tableauNames:
+                if self.game.piles[place].size() == 0 and count == source.size():
+                    if place[0] == "T":
+                        continue     # moving a whole pile onto an empty pile gains nothing
+                if self.game.move(name, place, count):
+                    break
+        self.selected = None
         self.redraw()
         self.checkWin()
 
